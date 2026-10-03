@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title th:text="${titulo}">Producto</title></head>
+<body>
+  <h1 th:text="${titulo}"></h1>
+  <form th:action="@{/productos/guardar}" th:object="${producto}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <p th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></p>
+    <div>
+      <label>Nombre:</label>
+      <input type="text" th:field="*{nombre}" />
+      <span th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+    </div>
+    <div>
+      <label>Precio:</label>
+      <input type="number" th:field="*{precio}" step="0.01" />
+      <span th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></span>
+    </div>
+    <div>
+      <label>Stock:</label>
+      <input type="number" th:field="*{stock}" />
+      <span th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></span>
+    </div>
+    <div>
+      <label>Categoría:</label>
+      <!-- Se envía solo el id; ProductoService carga la Categoria y asigna la relación -->
+      <select name="categoriaId" required>
+        <option value="">-- Seleccione --</option>
+        <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}"
+                th:selected="${c.id == categoriaId}"></option>
+      </select>
+    </div>
+    <button type="submit">Guardar</button>
+    <a th:href="@{/productos}">Cancelar</a>
+  </form>
+</body>
+</html>

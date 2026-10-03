@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Productos</title></head>
+<body>
+  <h1>Lista de Productos</h1>
+  <a th:href="@{/productos/nuevo}">Nuevo Producto</a> |
+  <a th:href="@{/categorias}">Ver categorías</a>
+
+  <!-- Consulta JPQL personalizada: productos de una categoría con precio mayor a un valor -->
+  <form id="filtro" method="get">
+    <label>Categoría:</label>
+    <select id="categoriaId" required>
+      <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}"></option>
+    </select>
+    <label>Precio mayor a:</label>
+    <input type="number" name="minimo" min="0" step="any" value="50000" required />
+    <button type="submit">Filtrar</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+      <!-- p.categoria.nombre ya viene cargado por el JOIN FETCH de findAllConCategoria -->
+      <tr th:each="p : ${productos}">
+        <td th:text="${p.nombre}"></td>
+        <td th:text="${p.categoria.nombre}"></td>
+        <td th:text="${'$ ' + #numbers.formatDecimal(p.precio, 1, 'POINT', 0, 'COMMA')}"></td>
+        <td th:text="${p.stock}"></td>
+        <td>
+          <a th:href="@{/productos/editar/{id}(id=${p.id})}">Editar</a>
+          <a th:href="@{/productos/eliminar/{id}(id=${p.id})}"
+             onclick="return confirm('¿Eliminar este producto?')">Eliminar</a>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(productos)}">
+        <td colspan="5">No hay productos registrados.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script th:inline="javascript">
+    // La ruta del filtro usa la categoría como @PathVariable, así que se arma la URL al enviar
+    const base = /*[[@{/productos/categoria/}]]*/ '/productos/categoria/';
+    document.getElementById('filtro').addEventListener('submit', function () {
+      this.action = base + document.getElementById('categoriaId').value + '/precio-mayor';
+    });
+  </script>
+</body>
+</html>

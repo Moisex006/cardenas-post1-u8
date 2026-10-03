@@ -36,8 +36,16 @@ public class CategoriaService {
         return repo.save(categoria);
     }
 
+    // Sin borrado en cascada: si la categoría tiene productos se rechaza la
+    // operación, obligando a reasignarlos o eliminarlos antes
     @Transactional
     public void eliminar(Long id) {
+        Categoria categoria = buscarPorId(id);
+        if (!categoria.getProductos().isEmpty()) {
+            throw new IllegalStateException(
+                "No se puede eliminar la categoría: tiene " +
+                categoria.getProductos().size() + " producto(s) asociado(s).");
+        }
         repo.deleteById(id);
     }
 }

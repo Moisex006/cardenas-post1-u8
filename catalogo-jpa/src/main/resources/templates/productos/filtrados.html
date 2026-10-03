@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Productos filtrados</title></head>
+<body>
+  <h1>Productos filtrados</h1>
+  <p>
+    Categoría: <strong th:text="${categoria.nombre}"></strong> —
+    precio mayor a <strong th:text="${'$ ' + #numbers.formatDecimal(minimo, 1, 'POINT', 0, 'COMMA')}"></strong>
+    (ordenados de mayor a menor precio)
+  </p>
+  <a th:href="@{/productos}">Volver a productos</a>
+
+  <table>
+    <thead>
+      <tr><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th></tr>
+    </thead>
+    <tbody>
+      <tr th:each="p : ${productos}">
+        <td th:text="${p.nombre}"></td>
+        <td th:text="${p.categoria.nombre}"></td>
+        <td th:text="${'$ ' + #numbers.formatDecimal(p.precio, 1, 'POINT', 0, 'COMMA')}"></td>
+        <td th:text="${p.stock}"></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(productos)}">
+        <td colspan="4">No hay productos de esta categoría con precio mayor al indicado.</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

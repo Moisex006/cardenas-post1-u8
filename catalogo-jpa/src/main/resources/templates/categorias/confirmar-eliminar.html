@@ -3,7 +3,8 @@
 <head><title>Eliminar Categoría</title></head>
 <body>
   <h1>Eliminar Categoría</h1>
-  <p>¿Seguro que desea eliminar esta categoría?</p>
+  <p th:if="${error}" th:text="${error}" style="color: #C62828;"></p>
+  <p th:unless="${error}">¿Seguro que desea eliminar esta categoría?</p>
   <table>
     <tr><th>Nombre</th><td th:text="${categoria.nombre}"></td></tr>
     <tr><th>Descripción</th><td th:text="${categoria.descripcion}"></td></tr>
