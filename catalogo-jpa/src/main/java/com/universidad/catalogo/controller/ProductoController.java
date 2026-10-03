@@ -68,7 +68,8 @@ public class ProductoController {
         return "redirect:/productos";
     }
 
-    @GetMapping("/eliminar/{id}")
+    // POST en lugar de GET: una petición GET no debe modificar datos
+    @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id) {
         productoService.eliminar(id);
         return "redirect:/productos";

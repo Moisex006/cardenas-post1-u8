@@ -121,7 +121,7 @@ order by p1_0.precio desc
 | GET | `/productos/nuevo` | Formulario de nuevo producto |
 | GET | `/productos/editar/{id}` | Formulario de edición prellenado |
 | POST | `/productos/guardar` | Crea o actualiza (valida campos y categoría) |
-| GET | `/productos/eliminar/{id}` | Elimina el producto |
+| POST | `/productos/eliminar/{id}` | Elimina el producto (formulario POST con confirmación) |
 | GET | `/productos/categoria/{id}/precio-mayor?minimo=50000` | Consulta JPQL filtrada por categoría y precio |
 
 ## Configuración de la base de datos
@@ -145,12 +145,14 @@ order by p1_0.precio desc
    con la URL, usuario y contraseña de MySQL:
    ```properties
    spring.datasource.url=jdbc:mysql://localhost:3306/catalogo_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-   spring.datasource.username=appuser
-   spring.datasource.password=apppass
+   spring.datasource.username=${DB_USERNAME:appuser}
+   spring.datasource.password=${DB_PASSWORD:apppass}
    spring.jpa.hibernate.ddl-auto=update
    spring.jpa.show-sql=true
    ```
-   Las tablas `categorias` y `productos` las crea Hibernate automáticamente al arrancar.
+   Las credenciales se leen de las variables de entorno `DB_USERNAME` y `DB_PASSWORD`;
+   si no están definidas se usan `appuser` / `apppass`, por lo que no hace falta configurar nada
+   para el laboratorio. Las tablas `categorias` y `productos` las crea Hibernate automáticamente al arrancar.
 
 ## Decisiones de diseño
 - ddl-auto=update en lugar de create: conserva los datos de prueba
@@ -172,6 +174,13 @@ order by p1_0.precio desc
 - Método helper `asignarCategoria` en Producto (lado propietario): asigna
   la categoría y mantiene sincronizada la lista `productos` del lado
   inverso, para que ambos lados de la relación en memoria sean consistentes.
+- Credenciales de la base de datos por variables de entorno
+  (`${DB_PASSWORD:apppass}`) en lugar de escribir la contraseña directamente
+  en application.properties, como recomienda el análisis de SonarCloud.
+- Eliminar productos con un formulario POST (no un enlace GET): una petición
+  GET no debe modificar datos del servidor.
+- Plantillas accesibles: `lang="es"` en cada página y cada `<label>` asociado
+  a su campo con `for`/`id`.
 - `allowPublicKeyRetrieval=true` en la URL de conexión: MySQL 8 usa
   `caching_sha2_password` y, con `useSSL=false`, el driver no puede
   autenticarse sin pedir la clave pública del servidor.
