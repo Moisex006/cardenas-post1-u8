@@ -2,6 +2,8 @@ package com.universidad.catalogo.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "categorias")
@@ -22,6 +24,12 @@ public class Categoria {
     @Column(name = "descripcion", length = 250)
     private String descripcion;
 
+    // Lado inverso de la relación: mappedBy indica que la clave foránea la
+    // controla Producto.categoria. Sin cascade = REMOVE a propósito: borrar
+    // una categoría no debe borrar sus productos (ver CategoriaService.eliminar).
+    @OneToMany(mappedBy = "categoria", fetch = FetchType.LAZY)
+    private List<Producto> productos = new ArrayList<>();
+
     // Constructor vacío requerido por JPA
     public Categoria() {}
 
@@ -32,4 +40,7 @@ public class Categoria {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+
+    // Sin setter: la lista se gestiona desde el lado propietario (Producto.asignarCategoria)
+    public List<Producto> getProductos() { return productos; }
 }
